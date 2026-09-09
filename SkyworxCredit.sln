@@ -1,0 +1,57 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A94963A8-0202-408C-9B61-035298FE3DD9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkyworxCredit.Api", "src\SkyworxCredit.Api\SkyworxCredit.Api.csproj", "{3330748E-1D5B-4877-98DA-B917082B5D92}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkyworxCredit.Domain", "src\SkyworxCredit.Domain\SkyworxCredit.Domain.csproj", "{5F5CBFCC-15EC-4F03-9C2B-18DA79BDB264}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkyworxCredit.Application", "src\SkyworxCredit.Application\SkyworxCredit.Application.csproj", "{D4898D1E-88F8-416B-96A7-113D8FA088E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkyworxCredit.Infrastructure", "src\SkyworxCredit.Infrastructure\SkyworxCredit.Infrastructure.csproj", "{022E6D77-6BB8-40AA-8362-B8E7AE642C9E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{33887100-B5E4-48C8-8F55-90656FAED310}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkyworxCredit.Tests", "tests\SkyworxCredit.Tests\SkyworxCredit.Tests.csproj", "{DAD1EC7B-7D84-4D8E-B4B1-D7B9D21C9BD6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3330748E-1D5B-4877-98DA-B917082B5D92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3330748E-1D5B-4877-98DA-B917082B5D92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3330748E-1D5B-4877-98DA-B917082B5D92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3330748E-1D5B-4877-98DA-B917082B5D92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F5CBFCC-15EC-4F03-9C2B-18DA79BDB264}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F5CBFCC-15EC-4F03-9C2B-18DA79BDB264}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F5CBFCC-15EC-4F03-9C2B-18DA79BDB264}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F5CBFCC-15EC-4F03-9C2B-18DA79BDB264}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4898D1E-88F8-416B-96A7-113D8FA088E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4898D1E-88F8-416B-96A7-113D8FA088E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4898D1E-88F8-416B-96A7-113D8FA088E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4898D1E-88F8-416B-96A7-113D8FA088E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{022E6D77-6BB8-40AA-8362-B8E7AE642C9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{022E6D77-6BB8-40AA-8362-B8E7AE642C9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{022E6D77-6BB8-40AA-8362-B8E7AE642C9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{022E6D77-6BB8-40AA-8362-B8E7AE642C9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DAD1EC7B-7D84-4D8E-B4B1-D7B9D21C9BD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAD1EC7B-7D84-4D8E-B4B1-D7B9D21C9BD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAD1EC7B-7D84-4D8E-B4B1-D7B9D21C9BD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAD1EC7B-7D84-4D8E-B4B1-D7B9D21C9BD6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3330748E-1D5B-4877-98DA-B917082B5D92} = {A94963A8-0202-408C-9B61-035298FE3DD9}
+		{5F5CBFCC-15EC-4F03-9C2B-18DA79BDB264} = {A94963A8-0202-408C-9B61-035298FE3DD9}
+		{D4898D1E-88F8-416B-96A7-113D8FA088E9} = {A94963A8-0202-408C-9B61-035298FE3DD9}
+		{022E6D77-6BB8-40AA-8362-B8E7AE642C9E} = {A94963A8-0202-408C-9B61-035298FE3DD9}
+		{DAD1EC7B-7D84-4D8E-B4B1-D7B9D21C9BD6} = {33887100-B5E4-48C8-8F55-90656FAED310}
+	EndGlobalSection
+EndGlobal
