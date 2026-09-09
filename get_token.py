@@ -2,7 +2,7 @@ import requests
 import json
 import sys
 
-def get_token(username="admin", password="password123", base_url="http://localhost:5190"):
+def get_token(username, password, base_url="http://localhost:5190"):
     """
     Fungsi untuk mendapatkan Bearer Token dari API Auth
     """
@@ -46,9 +46,12 @@ def get_token(username="admin", password="password123", base_url="http://localho
         return None
 
 if __name__ == "__main__":
-    # Bisa dijalankan dengan parameter custom
-    username = sys.argv[1] if len(sys.argv) > 1 else "admin"
-    password = sys.argv[2] if len(sys.argv) > 2 else "password123"
+    if len(sys.argv) < 3:
+        print("Usage: python get_token.py <username> <password> [base_url]")
+        sys.exit(1)
+
+    username = sys.argv[1]
+    password = sys.argv[2]
     base_url = sys.argv[3] if len(sys.argv) > 3 else "http://localhost:5190"
-    
+
     get_token(username, password, base_url)
