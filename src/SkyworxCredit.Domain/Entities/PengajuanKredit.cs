@@ -1,4 +1,4 @@
-namespace SkyworkxCredit.Domain.Entities;
+namespace SkyworxCredit.Domain.Entities;
 
 public class PengajuanKredit
 {

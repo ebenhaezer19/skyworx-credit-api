@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using SkyworkxCredit.Domain.Entities;
+using SkyworxCredit.Domain.Entities;
 
 namespace SkyworxCredit.Infrastructure.Data;
 
@@ -44,11 +44,13 @@ public class CreditDbContext : DbContext
 
             entity.Property(x => x.CreatedAt)
                 .HasColumnName("created_at")
-                .HasColumnType("timestamp");
+                .HasColumnType("timestamp with time zone")  
+                .IsRequired();
 
             entity.Property(x => x.UpdatedAt)
                 .HasColumnName("updated_at")
-                .HasColumnType("timestamp");
+                .HasColumnType("timestamp with time zone")  
+                .IsRequired();
 
             entity.HasIndex(x => x.Plafon);
 
