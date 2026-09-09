@@ -168,7 +168,7 @@ The project contains unit tests for:
 Verified locally:
 
 ```text
-Passed! - Failed: 0, Passed: 17, Skipped: 0, Total: 17
+Passed! - Failed: 0, Passed: 16, Skipped: 0, Total: 16
 ```
 
 ## Performance & Scalability
