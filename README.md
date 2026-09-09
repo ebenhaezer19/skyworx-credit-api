@@ -50,22 +50,27 @@ Backend technical test implementation for Credit Application Management using .N
 
 ---
 
-## 🏗️ Architecture
-┌─────────────────────────────────────────────────────────────┐
-│ API Layer │
-│ (Controllers, Middleware, Swagger) │
-├─────────────────────────────────────────────────────────────┤
-│ Application Layer │
-│ (DTOs, Services, Interfaces, Validators) │
-├─────────────────────────────────────────────────────────────┤
-│ Infrastructure Layer │
-│ (DbContext, Repositories, Migrations) │
-├─────────────────────────────────────────────────────────────┤
-│ Domain Layer │
-│ (Entities) │
-└─────────────────────────────────────────────────────────────┘
+## 🏗️ Architecture (Clean Architecture)
 
-text
+| Layer | Project | Components | Depends On |
+|-------|---------|------------|------------|
+| **API** | `SkyworxCredit.Api` | Controllers, Middleware, Swagger | App + Infrastructure |
+| **Application** | `SkyworxCredit.Application` | DTOs, Services, Interfaces, Validators | Domain |
+| **Infrastructure** | `SkyworxCredit.Infrastructure` | DbContext, Repositories, Migrations | App + Domain |
+| **Domain** | `SkyworxCredit.Domain` | Entities (PengajuanKredit) | (None) |
+
+**Dependency Direction:** API → Application → Infrastructure → Domain
+**Reference Rule:** Domain has no dependencies on other projects.
+
+### Project References
+
+| Project | References |
+|---------|------------|
+| `SkyworxCredit.Api` | → `Application`, `Infrastructure` |
+| `SkyworxCredit.Application` | → `Domain` |
+| `SkyworxCredit.Infrastructure` | → `Application`, `Domain` |
+| `SkyworxCredit.Domain` | → (None) |
+
 
 ### Layered Architecture (Clean Architecture):
 1. **Domain** - Entities (no dependencies)
