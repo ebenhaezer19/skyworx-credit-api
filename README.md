@@ -190,6 +190,39 @@ A production architecture can use:
 
 `Client -> API Gateway/Load Balancer -> Stateless .NET API -> PostgreSQL`
 
+                    ┌─────────────────────┐
+                    │       Client        │
+                    │ Web / Mobile / App  │
+                    └──────────┬──────────┘
+                               │ HTTPS
+                               ▼
+                    ┌─────────────────────┐
+                    │   API Gateway / WAF │
+                    │ Rate Limit / Routing│
+                    └──────────┬──────────┘
+                               │
+                ┌──────────────┴──────────────┐
+                │                             │
+                ▼                             ▼
+       ┌─────────────────┐           ┌─────────────────┐
+       │ Authentication   │           │ Credit API      │
+       │ Service / JWT    │           │ .NET 8          │
+       └────────┬────────┘           └───────┬─────────┘
+                │                            │
+                │ JWT                        │
+                └────────────┐      ┌────────┘
+                             ▼      ▼
+                       ┌───────────────┐
+                       │     Redis     │
+                       │    Cache      │
+                       └───────┬───────┘
+                               │ Cache Miss
+                               ▼
+                       ┌───────────────┐
+                       │  PostgreSQL   │
+                       │   Database    │
+                       └───────────────┘
+
 with supporting components:
 
 - Redis for distributed caching
