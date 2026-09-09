@@ -1,192 +1,129 @@
 # Skyworx Credit Application API
 
-Backend technical test implementation for Credit Application Management using .NET 8, Entity Framework Core, and PostgreSQL.
+Backend technical test implementation for a Credit Application Management API.
 
----
+## Tech Stack
 
-## 🚀 Tech Stack
+- .NET 8 / ASP.NET Core Web API
+- Entity Framework Core 8
+- PostgreSQL
+- Npgsql
+- JWT Authentication
+- Serilog
+- xUnit + FluentAssertions + Moq
+- Swagger / OpenAPI
+- GitHub Actions CI
 
-| Technology | Version | Description |
-|---|---|---|
-| **.NET** | 8.0 | ASP.NET Core Web API |
-| **Entity Framework Core** | 8.0.11 | ORM untuk database |
-| **PostgreSQL** | 16.3 | Database |
-| **JWT Authentication** | 7.6.3 | Bearer token authentication |
-| **FluentValidation** | 11.11.0 | Input validation |
-| **Serilog** | 8.0.3 | Request/Response logging |
-| **xUnit** | Latest | Unit testing |
-| **Swagger** | 6.6.2 | API Documentation |
+## Architecture
 
----
+The solution is separated into:
 
-## ✨ Features
+- `SkyworxCredit.Domain` — domain entity
+- `SkyworxCredit.Application` — DTOs, validation, business logic and interfaces
+- `SkyworxCredit.Infrastructure` — EF Core DbContext, migrations and repository
+- `SkyworxCredit.Api` — controllers, authentication, middleware and API configuration
+- `SkyworxCredit.Tests` — unit tests
 
-### Authentication & Authorization
-- ✅ JWT Bearer Token Authentication
-- ✅ Secure API endpoints (only authenticated users can access)
-- ✅ Login endpoint with hardcoded credentials for demo
+## Configuration
 
-### Credit Application Management (CRUD)
-- ✅ **Create** — Submit new credit application
-- ✅ **Read** — Get all applications or by ID
-- ✅ **Update** — Modify existing application
-- ✅ **Delete** — Remove application
+Secrets are intentionally not stored in source control.
 
-### Validation
-- ✅ Plafon > 0
-- ✅ Bunga between 0–100%
-- ✅ Tenor > 0
+Copy the values from `ENVIRONMENT.example.ps1` and replace placeholders with local values.
 
-### Installment Calculation
-- ✅ Calculate monthly installment using annuity formula
-- ✅ Return total payment and total interest
+PowerShell:
 
-### Additional Features
-- ✅ **Logging** — Serilog with file output
-- ✅ **Error Handling** — Global exception middleware
-- ✅ **Indexing** — Database indexes on `plafon` and `tenor`
-- ✅ **Unit Testing** — 17 test cases covering CRUD and calculations
-- ✅ **Swagger** — OpenAPI 3.0 documentation
-
----
-
-## 🏗️ Architecture (Clean Architecture)
-
-| Layer | Project | Components | Depends On |
-|---|---|---|---|
-| **API** | `SkyworxCredit.Api` | Controllers, Middleware, Swagger | App + Infrastructure |
-| **Application** | `SkyworxCredit.Application` | DTOs, Services, Interfaces, Validators | Domain |
-| **Infrastructure** | `SkyworxCredit.Infrastructure` | DbContext, Repositories, Migrations | App + Domain |
-| **Domain** | `SkyworxCredit.Domain` | Entities (PengajuanKredit) | (None) |
-
-**Dependency Direction:** API → Application → Infrastructure → Domain
-**Reference Rule:** Domain has no dependencies on other projects.
-
-### Project References
-
-| Project | References |
-|---|---|
-| `SkyworxCredit.Api` | → `Application`, `Infrastructure` |
-| `SkyworxCredit.Application` | → `Domain` |
-| `SkyworxCredit.Infrastructure` | → `Application`, `Domain` |
-| `SkyworxCredit.Domain` | → (None) |
-
-### Layered Architecture (Clean Architecture)
-1. **Domain** — Entities (no dependencies)
-2. **Application** — Business logic, DTOs, Services, Interfaces
-3. **Infrastructure** — Data access, Repositories, EF Core
-4. **API** — Controllers, Middleware, Configuration
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- [PostgreSQL 16.3](https://www.postgresql.org/download/)
-- [Visual Studio 2022](https://visualstudio.microsoft.com/) or VS Code
-
-### Installation
-
-**1. Clone the repository**
-```bash
-git clone <repository-url>
-cd skyworx-credit-api
+```powershell
+$env:ConnectionStrings__DefaultConnection = "Host=localhost;Database=skyworx_credit;Username=postgres;Password=<YOUR_POSTGRES_PASSWORD>"
+$env:Jwt__Key = "<GENERATE_A_LONG_RANDOM_SECRET>"
+$env:Auth__Username = "admin"
+$env:Auth__Password = "<SET_A_DEMO_PASSWORD>"
 ```
 
-**2. Update Connection String**
+The same environment variables are used by the EF Core design-time DbContext factory.
 
-Edit `src/SkyworxCredit.Api/appsettings.json`:
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Database=skyworx_credit;Username=postgres;Password=YOUR_PASSWORD"
-  },
-  "Jwt": {
-    "Key": "your-secret-key-min-16-characters",
-    "Issuer": "SkyworxCredit",
-    "Audience": "SkyworxCreditApi"
-  }
-}
+## Optional Token Helper
+
+`get_token.py` can request a JWT without storing a password in source code:
+
+```powershell
+python get_token.py <username> <password> [base_url]
 ```
 
-**3. Create Database**
-```bash
-# Connect to PostgreSQL
-psql -U postgres -h localhost
+## Database
 
-# Create database
-CREATE DATABASE skyworx_credit;
+The requested database object is `pengajuan_kredit` with:
 
-# Exit psql
-\q
-```
+- `id` UUID primary key
+- `plafon` numeric
+- `bunga` decimal(5,2)
+- `tenor` integer
+- `angsuran` numeric
+- `created_at` timestamp with time zone
+- `updated_at` timestamp with time zone
+- indexes on `plafon` and `tenor`
 
-**4. Apply Migrations**
-```bash
+SQL files are provided in `database/`.
+
+EF Core migrations are provided in:
+
+`src/SkyworxCredit.Infrastructure/Migrations/`
+
+### Apply migrations
+
+Set the connection string first, then:
+
+```powershell
 dotnet ef database update --project src/SkyworxCredit.Infrastructure --startup-project src/SkyworxCredit.Api
 ```
 
-**5. Run the API**
-```bash
-dotnet run --project src/SkyworxCredit.Api/SkyworxCredit.Api.csproj --launch-profile http
+## Run
+
+```powershell
+dotnet restore
+dotnet build
+dotnet run --project src/SkyworxCredit.Api/SkyworxCredit.Api.csproj
 ```
 
-**6. Access Swagger**
-```
-http://localhost:5190/swagger
-```
+Open the Swagger URL printed by the application console.
 
----
+## Authentication
 
-## 📚 API Documentation
+`POST /api/Auth/login`
 
-### Authentication
+Example:
 
-**Login**
-```http
-POST /api/Auth/login
-```
-
-Request Body:
 ```json
 {
   "username": "admin",
-  "password": "password123"
+  "password": "<SET_A_DEMO_PASSWORD>"
 }
 ```
 
-Response:
+Use the returned JWT as a Bearer token in Swagger for protected endpoints.
+
+## Main Endpoints
+
+### Authentication
+
+- `POST /api/Auth/login`
+
+### Credit Application CRUD
+
+- `POST /api/PengajuanKredit`
+- `GET /api/PengajuanKredit`
+- `GET /api/PengajuanKredit/{id}`
+- `PUT /api/PengajuanKredit/{id}`
+- `DELETE /api/PengajuanKredit/{id}`
+
+### Business Queries
+
+- `POST /api/PengajuanKredit/hitung-angsuran`
+- `GET /api/PengajuanKredit/longest-highest`
+- `GET /api/PengajuanKredit/average-bunga`
+
+## Example Request
+
 ```json
-{
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-```
-
-**Use Token:** Add `Bearer {token}` to the Authorization header.
-
-### Endpoints
-
-| Method | Endpoint | Description | Auth |
-|---|---|---|---|
-| POST | `/api/Auth/login` | Login | ❌ |
-| POST | `/api/PengajuanKredit` | Create credit application | ✅ |
-| GET | `/api/PengajuanKredit` | Get all applications | ✅ |
-| GET | `/api/PengajuanKredit/{id}` | Get application by ID | ✅ |
-| PUT | `/api/PengajuanKredit/{id}` | Update application | ✅ |
-| DELETE | `/api/PengajuanKredit/{id}` | Delete application | ✅ |
-| POST | `/api/PengajuanKredit/hitung-angsuran` | Calculate installment | ❌ |
-| GET | `/api/PengajuanKredit/longest-highest` | Longest tenor & highest plafon | ✅ |
-| GET | `/api/PengajuanKredit/average-bunga` | Average interest rate | ✅ |
-
-### Example Requests
-
-**Create Credit Application**
-```http
-POST /api/PengajuanKredit
-Authorization: Bearer {token}
-Content-Type: application/json
-
 {
   "plafon": 100000000,
   "bunga": 12,
@@ -194,245 +131,103 @@ Content-Type: application/json
 }
 ```
 
-Response (201 Created):
-```json
-{
-  "id": "ce984076-06b3-4dff-a6c1-63187c1bb533",
-  "plafon": 100000000,
-  "bunga": 12,
-  "tenor": 60,
-  "angsuran": 2224444.77,
-  "createdAt": "2026-09-09T11:04:40.1371725Z",
-  "updatedAt": "2026-09-09T11:04:40.1372668Z"
-}
+For the example above, the annuity calculation returns approximately:
+
+- Monthly installment: `2,224,444.77`
+- Total payment: `133,466,686.20`
+- Total interest: `33,466,686.20`
+
+## Validation
+
+The credit request validates:
+
+- `plafon > 0`
+- `tenor > 0`
+- `bunga` between `0` and `100`
+
+Invalid input returns HTTP 400.
+
+Missing credit data returns HTTP 404.
+
+Unhandled exceptions are handled by global middleware and logged with Serilog.
+
+## Testing
+
+The project contains unit tests for:
+
+- Credit application creation
+- Get by ID
+- Get all
+- Update
+- Delete
+- Installment calculation
+- Zero-interest calculation
+- Large-value calculation
+- Validation scenarios
+
+Verified locally:
+
+```text
+Passed! - Failed: 0, Passed: 17, Skipped: 0, Total: 17
 ```
 
-**Calculate Installment**
-```http
-POST /api/PengajuanKredit/hitung-angsuran
-Content-Type: application/json
+## Performance & Scalability
 
-{
-  "plafon": 100000000,
-  "bunga": 12,
-  "tenor": 60
-}
-```
+For production scale:
 
-Response:
-```json
-{
-  "plafon": 100000000,
-  "bunga": 12,
-  "tenor": 60,
-  "angsuranPerBulan": 2224444.77,
-  "totalPembayaran": 133466686.20,
-  "totalBunga": 33466686.20
-}
-```
+1. Keep database queries asynchronous and use `AsNoTracking()` for read-only workloads where appropriate.
+2. Add pagination to list endpoints.
+3. Maintain indexes based on actual query patterns.
+4. Use Redis for frequently requested, slowly changing reference/query data.
+5. Add distributed tracing, metrics and centralized logs.
+6. Scale API instances horizontally behind a load balancer.
+7. Use database connection pooling and tune PostgreSQL based on workload.
+8. Apply rate limiting and request-size limits at the API/gateway layer.
 
-**Longest Tenor & Highest Plafon**
-```http
-GET /api/PengajuanKredit/longest-highest
-Authorization: Bearer {token}
-```
+## Enterprise System Design
 
-**Average Interest Rate**
-```http
-GET /api/PengajuanKredit/average-bunga
-Authorization: Bearer {token}
-```
+A production architecture can use:
 
----
+`Client -> API Gateway/Load Balancer -> Stateless .NET API -> PostgreSQL`
 
-## 🧪 Testing
+with supporting components:
 
-### Run All Tests
-```bash
-dotnet test
-```
+- Redis for distributed caching
+- Message broker for asynchronous workloads
+- Centralized logging
+- Metrics and alerting
+- CI/CD pipeline
+- Containerized deployment
+- Secrets manager
+- WAF/API gateway controls
 
-### Test Coverage
+### Safe deployment
 
-**Total Tests:** 17 — All Passed ✅
+- Build and test on every pull request.
+- Run SAST/SCA and dependency checks in CI.
+- Build an immutable artifact/container.
+- Deploy to staging first.
+- Run integration/smoke tests.
+- Use rolling, blue-green, or canary deployment.
+- Keep database migrations backward-compatible where possible.
+- Provide health checks, monitoring and rollback procedures.
 
-| Test Class | Tests | Status |
-|---|---|---|
-| AngsuranCalculatorTests | 3 | ✅ Passed |
-| PengajuanKreditServiceTests | 7 | ✅ Passed |
-| PengajuanKreditValidatorTests | 5 | ✅ Passed |
-| Others | 2 | ✅ Passed |
+## Database Export Note
 
-### Test Scenarios
-- **Angsuran Calculation** — Valid data, zero interest, large values
-- **CRUD Operations** — Create, Read (by ID & all), Update, Delete
-- **Validation** — Plafon, Bunga, Tenor validation rules
+`skyworx_credit_backup.sql` is included as the database export captured from the development environment. The dump metadata identifies PostgreSQL 17.6. The portable `database/schema.sql` and `database/seed.sql` files are also included.
 
----
+## Submission Checklist
 
-## 📊 SQL Queries (Soal 1)
-
-**Longest Tenor & Highest Plafon**
-```sql
-SELECT * FROM pengajuan_kredit
-ORDER BY tenor DESC, plafon DESC
-LIMIT 1;
-```
-
-**Average Interest Rate**
-```sql
-SELECT AVG(bunga) FROM pengajuan_kredit;
-```
-
----
-
-## 📈 Performance & Scalability
-
-### Database Optimization
-- ✅ Index on `plafon` column
-- ✅ Index on `tenor` column
-- ✅ Primary key on `id` (UUID)
-
-### Caching Strategy (Redis)
-- Cache frequently accessed data (Get All, Get By ID)
-- TTL: 5 minutes for read operations
-- Invalidate cache on Create, Update, Delete
-
-### Load Balancing
-- Horizontal scaling with multiple instances
-- API Gateway (YARP/Ocelot) for routing
-- Round-robin load balancing
-
-### Microservices Architecture
-- **API Gateway** — Route requests to appropriate services
-- **Authentication Service** — Handle JWT validation
-- **Credit Service** — Manage credit applications
-- Database per service (microservices pattern)
-- Message Broker (RabbitMQ/Kafka) for async communication
-
----
-
-## 🏗️ System Design (Enterprise Scale)
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                         Client Apps                             │
-└─────────────────────────────────────────────────────────────────┘
-                                │
-                                ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                      API Gateway                                │
-│          (YARP / Ocelot - Load Balancing)                       │
-└─────────────────────────────────────────────────────────────────┘
-                │              │              │
-                ▼              ▼              ▼
-┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐
-│  Auth Service    │ │  Credit Service  │ │  User Service    │
-│  (JWT)           │ │  (CRUD)          │ │  (Profile)       │
-└──────────────────┘ └──────────────────┘ └──────────────────┘
-                │              │              │
-                └──────────────┼──────────────┘
-                               ▼
-                    ┌──────────────────────┐
-                    │   PostgreSQL         │
-                    │   (Master-Slave)     │
-                    └──────────────────────┘
-                               │
-                               ▼
-                    ┌──────────────────────┐
-                    │   Redis Cache        │
-                    │   (Caching Layer)    │
-                    └──────────────────────┘
-```
-
-### CI/CD Pipeline
-1. **Build** → GitHub Actions / GitLab CI
-2. **Test** → Run Unit Tests
-3. **Lint** → Code Quality Check
-4. **Dockerize** → Build Container Image
-5. **Push** → Push to Container Registry
-6. **Deploy** → Kubernetes / Docker Swarm
-7. **Monitor** → Health Checks & Alerts
-
-### Deployment Strategy
-- **Blue-Green Deployment** for zero downtime
-- **Canary Releases** for gradual rollout
-- **Rollback** capability on failure
-
----
-
-## 👨‍💻 Code Review & Leadership
-
-### Code Review Process
-1. **Pull Request** → Create PR with description
-2. **Automated Checks** → CI runs tests & linters
-3. **Peer Review** → At least 2 approvals
-4. **Review Criteria:**
-   - Code readability & maintainability
-   - Test coverage
-   - Performance implications
-   - Security concerns
-5. **Merge** → Squash merge to main
-
-### Mentoring Junior Developers
-- **Pair Programming** — Hands-on guidance
-- **Code Walkthroughs** — Explain design decisions
-- **Documentation** — Write clear documentation
-- **Knowledge Sharing** — Weekly tech talks
-- **Gradual Responsibility** — Start with small tasks, scale up
-
----
-
-## 🔧 Troubleshooting
-
-### 1. Database Connection Failed
-```bash
-# Check PostgreSQL service
-Get-Service -Name *postgres*
-
-# Start PostgreSQL
-Start-Service -Name postgresql-x64-17
-```
-
-### 2. Migration Failed
-```bash
-# Remove and recreate migrations
-dotnet ef migrations remove --project src/SkyworxCredit.Infrastructure
-dotnet ef migrations add InitialCreate --project src/SkyworxCredit.Infrastructure
-dotnet ef database update --project src/SkyworxCredit.Infrastructure
-```
-
-### 3. Port Already in Use
-```bash
-# Find process using port 5190
-netstat -ano | findstr :5190
-
-# Kill process (replace PID)
-taskkill /PID <PID> /F
-```
-
----
-
-## 📝 License
-
-This project is for technical test purposes only. Property of PT Skyworx Indonesia.
-
----
-
-## 👤 Author
-
-Eben
-
----
-
-## 🎯 Project Status
-
-| Feature | Status |
-|---|---|
-| Database & Query Optimization | ✅ Completed |
-| API CRUD with Authentication | ✅ Completed |
-| Installment Calculation API | ✅ Completed |
-| Unit Testing | ✅ Completed (17 tests) |
-| Error Handling & Logging | ✅ Completed |
-| Performance & Scalability | ✅ Documented |
-| System Design & Leadership | ✅ Documented |
+- [x] .NET 8 project
+- [x] Entity Framework Core
+- [x] PostgreSQL schema
+- [x] CRUD API
+- [x] JWT authentication
+- [x] Validation
+- [x] Installment calculation
+- [x] Error handling
+- [x] Serilog logging
+- [x] Unit tests
+- [x] CI workflow
+- [x] Database export
+- [x] Security-sensitive local configuration removed from submission
